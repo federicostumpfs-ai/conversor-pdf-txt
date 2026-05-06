@@ -1,98 +1,96 @@
 import streamlit as st
 from pypdf import PdfReader
 import google.generativeai as genai
-# Tu llave ahora sí funcionará porque arriba ya importamos "genai"
-API_KEY = "AIzaSyDUCyGsLBiYVlJJGp1mGMLlSgd3rRASk1Q"
+
+# Tu API KEY de Google AI Studio
+API_KEY = "AIzaSyDUCyGsLBiYV1JJGp1mGML1Sgd3rRASK1Q"
 genai.configure(api_key=API_KEY)
-
-
 
 st.set_page_config(page_title="Centro de Cómputos - Generador", layout="centered")
 
-
-
 st.title("📄 Generador de TXT para Sorteos")
-
 st.write("Herramienta interna de procesamiento de extractos oficiales.")
 
-
-
 uploaded_file = st.file_uploader("Cargue un PDF individual", type="pdf")
+
 if uploaded_file:
+    with st.spinner('Procesando PDF y extrayendo datos con Inteligencia Artificial...'):
+        try:
+            # 1. Leer el texto completo del PDF cargado
+            reader = PdfReader(uploaded_file)
+            full_text = ""
+            for page in reader.pages:
+                text_page = page.extract_text()
+                if text_page:
+                    full_text += text_page + "\n"
 
-    with st.spinner('Procesando PDF y extrayendo datos...'):
+            # 2. Configurar el modelo correcto según la última documentación oficial
+            # Usamos 'gemini-1.5-flash' directamente
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            
+            # 3. Darle instrucciones ultra-precisas con ejemplos reales del Centro de Cómputos
+            prompt = f"""
+            Actúas como un operador experto del centro de cómputos de una lotería nacional.
+            Tu tarea es tomar el texto crudo extraído de un PDF oficial de sorteo y estructurarlo exactamente en el formato TXT plano que requiere nuestro sistema operativo interno.
 
-        # 1. Leer el PDF
+            REGLAS ESTRICTAS DE FORMATO SEGÚN EL JUEGO DETECTADO:
 
-        reader = PdfReader(uploaded_file)
+            --- EJEMPLO 1: SI EL TEXTO CORRESPONDE A UN QUINI 6 ---
+            Debes estructurarlo usando bordes '+=======================================+' y mayúsculas, respetando las columnas POZO, CANTIDAD GANADORES y PREMIO POR CUPÓN:
+            +=======================================+
+            |QUINI 6 # [NÚMERO] - [FECHA] [PREMIOS]  |
+            +=======================================+
+            |     POZO     CANTIDAD      PREMIO     |
+            |      $       GANADORES     POR CUPON  |
+            +=======================================+
+            |PRIMER SORTEO    [NÚMEROS GANADORES]   |
+            |                                       |
+            |1P  [POZO]  [CANTIDAD]   [PREMIO CUPÓN]|
+            |2P  [POZO]  [CANTIDAD]   [PREMIO CUPÓN]|
+            |3P  [POZO]  [CANTIDAD]   [PREMIO CUPÓN]|
+            |ES  [POZO]  [GANADORES]  [PREMIO CUPÓN]|
+            +=======================================+
+            [Y continuar así con LA SEGUNDA, REVANCHA, SIEMPRE SALE, PREMIO EXTRA y al final colocar el PROXIMO SORTEO con su POZO ESTIMADO]
 
-        full_text = ""
+            --- EJEMPLO 2: SI EL TEXTO CORRESPONDE A LOTO PLUS o LOTO 5 ---
+            Debes estructurarlo usando bordes de asteriscos '*======================================*' y barras verticales:
+            *======================================*
+            | LOTO PLUS # [NÚMERO] - [FECHA] [PREMIOS]|
+            *======================================*
+            |TRADICIONAL  [NÚMEROS GANADORES]      |
+            *======================================*
+            |6 AC       [CANTIDAD/VACANTE]  [MONTO] |
+            |5 AC       [CANTIDAD/VACANTE]  [MONTO] |
+            |4 AC       [CANTIDAD/VACANTE]  [MONTO] |
+            *======================================*
 
-        for page in reader.pages:
+            REQUISITOS ADICIONALES:
+            - Si el premio quedó sin ganadores, escribe obligatoriamente la palabra 'VACANTE'.
+            - Alinea los números de manera prolija para mantener las columnas verticales rectas.
+            - Devuelve ÚNICAMENTE el texto que irá dentro del archivo .txt, sin introducciones ni formatos markdown adicionales (no pongas ```text al inicio).
 
-            full_text += page.extract_text()
+            TEXTO EXTRAÍDO DEL PDF ORIGINAL A TRANSFORMAR:
+            {full_text}
+            """
 
+            # 4. Generar el contenido
+            response = model.generate_content(prompt)
+            txt_final = response.text
 
-
-        # 2. Instrucción de Inteligencia Artificial
-        # Cambiamos 'gemini-1.5-flash' por 'models/gemini-1.5-flash'
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
-
-        
-
-        prompt = f"""
-
-        Actúa como un experto en extracción de datos para un centro de cómputos de lotería.
-        Tu tarea es leer el siguiente texto de un PDF y transformarlo al formato TXT exacto.
-
-
-
-        REGLAS DE FORMATO:
-
-        1. Si es QUINI 6: Usa bordes con '+' y '-' y el encabezado exacto que viste en los ejemplos.
-
-        2. Si es LOTO: Usa bordes con '*' y '='. 
-
-        3. Identifica: Número de Sorteo, Fecha, Números Ganadores, Pozo, Cantidad de Ganadores y Premio por Cupón.
-
-        4. Si el premio dice 'VACANTE', respeta esa palabra en el TXT.
-
-        5. Mantén la alineación de las columnas para que se vea ordenado.
-
-
-
-        TEXTO DEL PDF:
-
-        {full_text}
-
-        """
-
-
-
-        response = model.generate_content(prompt)
-
-        txt_final = response.text
-
-
-
-        # 3. Mostrar resultado y permitir descarga
-
-        st.success("Archivo procesado correctamente")
-
-        st.text_area("Vista previa del TXT:", txt_final, height=400)
-
-        
-
-        nombre_salida = uploaded_file.name.replace(".pdf", ".txt")
-
-        st.download_button(
-
-            label="⬇️ Descargar archivo .txt",
-
-            data=txt_final,
-
-            file_name=nombre_salida,
-
-            mime="text/plain"
-
-        )
+            # 5. Mostrar resultado en la interfaz web y habilitar descarga
+            st.success("¡Archivo transformado con éxito!")
+            st.text_area("Vista previa del formato generado:", txt_final, height=450)
+            
+            # Cambiar extensión para la descarga (.pdf -> .txt)
+            nombre_salida = uploaded_file.name.replace(".pdf", ".txt").replace(".PDF", ".txt")
+            
+            st.download_button(
+                label="⬇️ Descargar archivo .txt listo",
+                data=txt_final,
+                file_name=nombre_salida,
+                mime="text/plain"
+            )
+            
+        except Exception as e:
+            st.error(f"Hubo un problema al procesar el archivo: {e}")
+            st.info("Tip técnico: Si dice NotFound, asegúrese de que el archivo requirements.txt tenga cargada la última versión de google-generativeai.")
