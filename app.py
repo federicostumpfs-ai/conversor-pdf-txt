@@ -3,7 +3,7 @@ from pypdf import PdfReader
 import google.generativeai as genai
 
 # Asegúrate de que NO haya espacios antes o después de la clave
-API_KEY = "AIzaSyDUCyGsLBiYVlJJGp1mGMLlSgd3rRASk1Q".strip() 
+API_KEY = "AIzaSyAWvw1nVCn4mQ9fSjphE7SN8wtq6V-WT_A".strip() 
 
 try:
     genai.configure(api_key=API_KEY)
