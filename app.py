@@ -26,7 +26,7 @@ if uploaded_file:
                     full_text += text_page + "\n"
 
             # Configuración de IA
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = genai.GenerativeModel('gemini-pro')
             prompt = f"Transforma este extracto de lotería al formato TXT de centro de cómputos. Usa bordes de '+==+' para Quini y '*==*' para Loto. Si no hay ganadores, pon 'VACANTE'. Texto: {full_text}"
 
             response = model.generate_content(prompt)
