@@ -79,35 +79,24 @@ if uploaded_file:
             {full_text}
             """
 
-            # 4. Generar el contenido
+           # 4. Generar el contenido
             response = model.generate_content(prompt)
-            try:
-            reader = PdfReader(uploaded_file)
-            full_text = ""
-            for page in reader.pages:
-                full_text += page.extract_text() + "\n"
+            txt_final = response.text
 
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            # 5. Mostrar resultado en la interfaz web y habilitar descarga
+            st.success("¡Archivo transformado con éxito!")
+            st.text_area("Vista previa del formato generado:", txt_final, height=450)
             
-            # Instrucción simplificada pero efectiva
-            prompt = f"Transforma este extracto de lotería al formato TXT de centro de cómputos. Usa bordes de '+==+' para Quini y '*==*' para Loto. Si no hay ganadores, pon 'VACANTE'. Texto: {full_text}"
-
-            response = model.generate_content(prompt)
+            # Cambiar extensión para la descarga (.pdf -> .txt)
+            nombre_salida = uploaded_file.name.replace(".pdf", ".txt").replace(".PDF", ".txt")
             
-            # Verificamos que la IA respondió algo
-            if response and response.text:
-                txt_final = response.text
-                st.success("¡Archivo transformado!")
-                st.text_area("Vista previa:", txt_final, height=450)
-                
-                st.download_button(
-                    label="⬇️ Descargar TXT",
-                    data=txt_final,
-                    file_name=uploaded_file.name.replace(".pdf", ".txt"),
-                    mime="text/plain"
-                )
-            else:
-                st.warning("La IA no pudo generar el texto. Intenta subir el archivo de nuevo.")
-
+            st.download_button(
+                label="⬇️ Descargar archivo .txt listo",
+                data=txt_final,
+                file_name=nombre_salida,
+                mime="text/plain"
+            )
+            
         except Exception as e:
-            st.error(f"Error técnico: {e}")
+            st.error(f"Hubo un problema al procesar el archivo: {e}")
+            st.info("Tip técnico: Si dice NotFound, asegúrese de que el archivo requirements.txt tenga cargada la última versión de google-generativeai.")
