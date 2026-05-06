@@ -3,7 +3,7 @@ from pypdf import PdfReader
 import google.generativeai as genai
 
 # Tu API KEY de Google AI Studio
-API_KEY = "AIzaSyDUCyGsLBiYV1JJGp1mGML1Sgd3rRASK1Q"
+API_KEY = "AIzaSyDUCyGsLBiYVlJJGp1mGMLlSgd3rRASk1Q"
 genai.configure(api_key=API_KEY)
 
 st.set_page_config(page_title="Centro de Cómputos - Generador", layout="centered")
