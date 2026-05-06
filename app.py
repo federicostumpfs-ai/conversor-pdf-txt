@@ -36,7 +36,7 @@ if uploaded_file:
 
         # 2. Instrucción de Inteligencia Artificial
 
-        model = genai.GenerativeModel('gemini-1.5-flash')
+       model = genai.GenerativeModel('models/gemini-1.5-flash')
 
         
 
