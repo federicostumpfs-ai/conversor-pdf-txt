@@ -14,7 +14,8 @@ st.write("Herramienta interna de procesamiento de extractos oficiales.")
 
 
 
-uploaded_file = st.file_uploader("Cargue un PDF individual", type="pdf")if uploaded_file:
+uploaded_file = st.file_uploader("Cargue un PDF individual", type="pdf")
+if uploaded_file:
 
     with st.spinner('Procesando PDF y extrayendo datos...'):
 
