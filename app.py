@@ -2,8 +2,14 @@ import streamlit as st
 from pypdf import PdfReader
 import google.generativeai as genai
 
-# Tu API KEY de Google AI Studio
-API_KEY = "AIzaSyDUCyGsLBiYVlJJGp1mGMLlSgd3rRASk1Q"
+# Asegúrate de que NO haya espacios antes o después de la clave
+API_KEY = "AIzaSyDUCyGsLBiYVlJJGp1mGMLlSgd3rRASk1Q".strip() 
+
+try:
+    genai.configure(api_key=API_KEY)
+    model = genai.GenerativeModel('gemini-1.5-flash')
+except Exception as e:
+    st.error(f"Error de configuración: {e}")
 genai.configure(api_key=API_KEY)
 
 st.set_page_config(page_title="Centro de Cómputos - Generador", layout="centered")
