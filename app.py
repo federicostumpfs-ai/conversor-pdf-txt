@@ -1,5 +1,8 @@
+import streamlit as st
+from pypdf import PdfReader
+import google.generativeai as genai
+# Tu llave ahora sí funcionará porque arriba ya importamos "genai"
 API_KEY = "AIzaSyDUCyGsLBiYVlJJGp1mGMLlSgd3rRASk1Q"
-
 genai.configure(api_key=API_KEY)
 
 
