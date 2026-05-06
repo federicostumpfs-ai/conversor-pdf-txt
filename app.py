@@ -35,16 +35,15 @@ if uploaded_file:
 
 
         # 2. Instrucción de Inteligencia Artificial
-
-       model = genai.GenerativeModel('models/gemini-1.5-flash')
+        # Cambiamos 'gemini-1.5-flash' por 'models/gemini-1.5-flash'
+        model = genai.GenerativeModel('models/gemini-1.5-flash')
 
         
 
         prompt = f"""
 
         Actúa como un experto en extracción de datos para un centro de cómputos de lotería.
-
-        Tu tarea es leer el siguiente texto de un PDF y transformarlo al formato TXT exacto de la empresa.
+        Tu tarea es leer el siguiente texto de un PDF y transformarlo al formato TXT exacto.
 
 
 
