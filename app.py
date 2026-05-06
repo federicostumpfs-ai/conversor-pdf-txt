@@ -3,7 +3,7 @@ from pypdf import PdfReader
 import google.generativeai as genai
 
 # 1. Configuración Inicial
-API_KEY = "TU_API_KEY_AQUI" # Poné tu clave acá adentro
+API_KEY = "AIzaSyD1KQ72ZKxTIY3JoUPcaGRGBtIDfq3C43E" # Poné tu clave acá adentro
 genai.configure(api_key=API_KEY)
 
 st.set_page_config(page_title="Centro de Cómputos - Generador", layout="centered")
